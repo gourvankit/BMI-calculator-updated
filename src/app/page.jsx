@@ -3,10 +3,11 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import styles from "./home.module.css";
 import FormContainer from "@/Components/formContainer";
-
+import { SyncLoader } from "react-spinners";
 const Page = () => {
   const [sliderPosition, setSliderPosition] = useState(0);
   const [healthStatus, setHealthStatus] = useState("");
+  const [loading, setLoading] = useState("false");
   const [suggestedWeightRange, setSuggestedWeightRange] = useState("");
   const bmi = useSelector((state) => state.bmiReducer.value.bmi);
   const bmiUpdated = Math.round(bmi * 10) / 10;
@@ -14,8 +15,12 @@ const Page = () => {
 
   useEffect(() => {
     if (isClicked) {
-      movePoint(bmiUpdated);
-      updateHealthStatus(bmiUpdated);
+      setLoading(true);
+      setTimeout(() => {
+        movePoint(bmiUpdated);
+        updateHealthStatus(bmiUpdated);
+        setLoading(false);
+      }, 2000);
     }
   }, [bmiUpdated, isClicked]);
 
@@ -68,50 +73,61 @@ const Page = () => {
               </p>
             ) : (
               <>
-                <p className={styles.bmiLine}>
-                  Your Body Mass Index (BMI) is{" "}
-                  <span className={styles.bmiNumber}>{bmiUpdated}</span>
-                </p>
-                <hr className={styles.horizontalLine} />
-                <p className={styles.concludeLine}>
-                  According to your height, your weight is in the <br />
-                  <span className={styles.concludeWord}>
-                    {healthStatus}
-                  </span>{" "}
-                  category
-                </p>
-                <div className={styles.dialogImage}>
-                  <div className={styles.oneComp}>
-                    <div className={styles.section1}></div>
-                    <p>UnderWeight</p>
-                  </div>
-                  <div className={styles.oneComp}>
-                    <div className={styles.section2}></div>
-                    <p>Healthy</p>
-                  </div>
-                  <div className={styles.oneComp}>
-                    <div className={styles.section3}></div>
-                    <p>Overweight</p>
-                  </div>
-                  <div className={styles.oneComp}>
-                    <div className={styles.section4}></div>
-                    <p>Obese</p>
-                  </div>
+                {loading && (
+                  <SyncLoader
+                    color="#657e79"
+                    size={30}
+                    className={styles.loader}
+                  />
+                )}
+                {!loading && (
+                  <>
+                    <p className={styles.bmiLine}>
+                      Your Body Mass Index (BMI) is{" "}
+                      <span className={styles.bmiNumber}>{bmiUpdated}</span>
+                    </p>
+                    <hr className={styles.horizontalLine} />
+                    <p className={styles.concludeLine}>
+                      According to your height, your weight is in the <br />
+                      <span className={styles.concludeWord}>
+                        {healthStatus}
+                      </span>{" "}
+                      category
+                    </p>
+                    <div className={styles.dialogImage}>
+                      <div className={styles.oneComp}>
+                        <div className={styles.section1}></div>
+                        <p>UnderWeight</p>
+                      </div>
+                      <div className={styles.oneComp}>
+                        <div className={styles.section2}></div>
+                        <p>Healthy</p>
+                      </div>
+                      <div className={styles.oneComp}>
+                        <div className={styles.section3}></div>
+                        <p>Overweight</p>
+                      </div>
+                      <div className={styles.oneComp}>
+                        <div className={styles.section4}></div>
+                        <p>Obese</p>
+                      </div>
 
-                  <div
-                    className={styles.pointer}
-                    id="point"
-                    style={{ left: `${sliderPosition}%` }}
-                  ></div>
-                </div>
-                <hr className={styles.horizontalLine} />
-                <p className={styles.concludeLine2}>
-                  For your height, a healthy weight would be between <br />{" "}
-                  <span className={styles.concludeWord2}>
-                    {suggestedWeightRange}
-                  </span>{" "}
-                  kilograms
-                </p>
+                      <div
+                        className={styles.pointer}
+                        id="point"
+                        style={{ left: `${sliderPosition}%` }}
+                      ></div>
+                    </div>
+                    <hr className={styles.horizontalLine} />
+                    <p className={styles.concludeLine2}>
+                      For your height, a healthy weight would be between <br />{" "}
+                      <span className={styles.concludeWord2}>
+                        {suggestedWeightRange}
+                      </span>{" "}
+                      kilograms
+                    </p>
+                  </>
+                )}
               </>
             )}
           </div>

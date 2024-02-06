@@ -21,6 +21,10 @@
   font-weight: 300;
   font-size: 22px;
 }
+.loader {
+  margin-left: 400px;
+  margin-top: 200px;
+}
 .result {
   padding-left: 40px;
   padding-top: 70px;
