@@ -28,10 +28,13 @@ const FormContainer = () => {
     }
     const kg = e.target.weightInput.value;
     if (ftHeight > 0 && inchHeight > 0) {
-      const totalInches = ftHeight * 12 + inchHeight;
-      const centimeters = totalInches * 2.54;
+      const totalFt = parseInt(ftHeight) + parseFloat(inchHeight / 12);
+      const centimeters = totalFt * 30.48;
       const heightToSend = centimeters;
       if (document.getElementById("kg").checked) {
+        // console.log("inside");
+        // console.log(centimeters);
+
         const bmi = await fetch("/api/calculate", {
           method: "POST",
           headers: {

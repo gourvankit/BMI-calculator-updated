@@ -1,7 +1,14 @@
+import middleware from "../../middleware";
 export async function POST(req, res) {
+  const response = await middleware(req);
+
+  if (response) {
+    return response;
+  }
   const val = await req.json();
   const weightInKg = parseFloat(val.weight);
   const heightInM = parseFloat(val.height) / 100;
+
   if (
     !isNaN(weightInKg) &&
     !isNaN(heightInM) &&
@@ -9,8 +16,8 @@ export async function POST(req, res) {
     heightInM > 0
   ) {
     const bmi = weightInKg / (heightInM * heightInM);
-    // res.status(200).json({ bmi });
-    return new Response(bmi);
+    return new Response(bmi.toString());
   }
-  return new Response("Ok");
+
+  return new Response("Error");
 }
