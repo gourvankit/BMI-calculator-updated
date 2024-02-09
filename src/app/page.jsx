@@ -2,27 +2,34 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import styles from "./home.module.css";
-import FormContainer from "@/Components/formContainer";
+import FormContainer from "../Components/formContainer";
 import { SyncLoader } from "react-spinners";
 const Page = () => {
   const [sliderPosition, setSliderPosition] = useState(0);
   const [healthStatus, setHealthStatus] = useState("");
   const [loading, setLoading] = useState("false");
   const [suggestedWeightRange, setSuggestedWeightRange] = useState("");
-  const bmi = useSelector((state) => state.bmiReducer.value.bmi);
-  const bmiUpdated = Math.round(bmi * 10) / 10;
-  const isClicked = useSelector((state) => state.bmiReducer.value.isClicked);
-
+  const [bmi, setBMI] = useState(null);
+  const [isClicked, setIsClicked] = useState(false);
+  // const bmi = useSelector((state) => state.bmiReducer.value.bmi);
+  // const isClicked = useSelector((state) => state.bmiReducer.value.isClicked);
+  const handleBMICalculation = (calculatedBMI) => {
+    const bmiUpdated = Math.round(calculatedBMI * 10) / 10;
+    setBMI(bmiUpdated);
+  };
+  const handleClick = () => {
+    setIsClicked(true);
+  };
   useEffect(() => {
     if (isClicked) {
       setLoading(true);
       setTimeout(() => {
-        movePoint(bmiUpdated);
-        updateHealthStatus(bmiUpdated);
+        movePoint(bmi);
+        updateHealthStatus(bmi);
         setLoading(false);
       }, 2000);
     }
-  }, [bmiUpdated, isClicked]);
+  }, [bmi, isClicked]);
 
   const movePoint = (bmi) => {
     if (!isNaN(bmi) && bmi >= 0 && bmi <= 100) {
@@ -40,13 +47,13 @@ const Page = () => {
     }
   };
   const updateHealthStatus = (bmi) => {
-    if (bmi < 18.5) {
+    if (bmi <= 18.5) {
       setHealthStatus("Underweight");
       setSuggestedWeightRange("40 & 51");
-    } else if (bmi < 24.9) {
+    } else if (bmi <= 24.9) {
       setHealthStatus("Healthy");
       setSuggestedWeightRange("51 & 68");
-    } else if (bmi > 25 && bmi < 29.9) {
+    } else if (bmi >= 25 && bmi <= 29.9) {
       setHealthStatus("Overweight");
       setSuggestedWeightRange("68 & 80");
     } else {
@@ -60,7 +67,10 @@ const Page = () => {
       <div className={styles.mainContainer}>
         <div className={styles.pageContainer}>
           <div className={styles.form}>
-            <FormContainer />
+            <FormContainer
+              onBMICalculate={handleBMICalculation}
+              onButtonClick={handleClick}
+            />
           </div>
           <div
             className={`${styles.result} ${!isClicked ? styles.result2 : " "}`}
@@ -84,7 +94,7 @@ const Page = () => {
                   <>
                     <p className={styles.bmiLine}>
                       Your Body Mass Index (BMI) is{" "}
-                      <span className={styles.bmiNumber}>{bmiUpdated}</span>
+                      <span className={styles.bmiNumber}>{bmi}</span>
                     </p>
                     <hr className={styles.horizontalLine} />
                     <p className={styles.concludeLine}>

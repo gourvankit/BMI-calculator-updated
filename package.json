@@ -9,17 +9,12 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@reduxjs/toolkit": "^2.0.1",
     "@upstash/ratelimit": "^1.0.0",
     "@upstash/redis": "^1.28.3",
     "@vercel/kv": "^1.0.1",
-    "chart.js": "^4.4.1",
-    "mongoose": "^8.1.1",
     "next": "14.1.0",
     "react": "^18",
-    "react-chartjs-2": "^5.2.0",
     "react-dom": "^18",
-    "react-redux": "^9.1.0",
     "react-spinners": "^0.13.8"
   },
   "devDependencies": {

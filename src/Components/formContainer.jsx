@@ -1,9 +1,6 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import styles from "./form.module.css";
-import { changeBmi } from "@/app/redux/features/bmi-slice";
-import { useDispatch } from "react-redux";
-const FormContainer = () => {
-  const dispatch = useDispatch();
+const FormContainer = ({ onBMICalculate, onButtonClick }) => {
   const [unit, setUnit] = useState("cm");
   const [option, setOption] = useState("Adult");
   const [buttonPressed, setButtonPressed] = useState(false);
@@ -16,66 +13,28 @@ const FormContainer = () => {
   const submitHandler = async (e) => {
     e.preventDefault();
     setButtonPressed(true);
-    var cmHeight = 0;
-    var ftHeight = 0;
-    var inchHeight = 0;
-    if (document.getElementById("u1").checked) {
-      cmHeight = e.target.cmHeight.value;
-    }
-    if (document.getElementById("u2").checked) {
-      ftHeight = e.target.ftHeight.value;
-      inchHeight = e.target.inchHeight.value;
-    }
-    const kg = e.target.weightInput.value;
-    if (ftHeight > 0 && inchHeight > 0) {
-      const totalFt = parseInt(ftHeight) + parseFloat(inchHeight / 12);
-      const centimeters = totalFt * 30.48;
-      const heightToSend = centimeters;
-      if (document.getElementById("kg").checked) {
-        // console.log("inside");
-        // console.log(centimeters);
 
-        const bmi = await fetch("/api/calculate", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ weight: kg, height: heightToSend }),
-        });
-        dispatch(changeBmi(await bmi.json()));
-      } else {
-        const kilograms = kg * 0.453592;
-        const bmi2 = await fetch("/api/calculate", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ weight: kilograms, height: heightToSend }),
-        });
-        dispatch(changeBmi(await bmi2.json()));
-      }
-    } else {
-      if (document.getElementById("kg").checked) {
-        const bmi = await fetch("/api/calculate", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ weight: kg, height: cmHeight }),
-        });
-        dispatch(changeBmi(await bmi.json()));
-      } else {
-        const kilograms = kg * 0.453592;
-        const bmi2 = await fetch("/api/calculate", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ weight: kilograms, height: cmHeight }),
-        });
-        dispatch(changeBmi(await bmi2.json()));
-      }
+    const formData = new FormData(e.target);
+    const weight = formData.get("weightInput");
+    const height =
+      unit === "cm" ? formData.get("cmHeight") : calculateCmHeight(formData);
+
+    try {
+      const response = await fetch(
+        "/api/calculate?weight=" + weight + "&height=" + height
+      );
+      const data = await response.json();
+      onBMICalculate(data);
+      onButtonClick();
+    } catch (error) {
+      console.error("Error calculating BMI:", error);
     }
+  };
+  const calculateCmHeight = (formData) => {
+    const ft = parseFloat(formData.get("ftHeight"));
+    const inches = parseFloat(formData.get("inchHeight"));
+    const totalInches = ft * 12 + inches;
+    return totalInches * 2.54; // Convert inches to centimeters
   };
 
   return (
