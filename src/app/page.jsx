@@ -1,6 +1,5 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import styles from "./home.module.css";
 import FormContainer from "../Components/formContainer";
 import { SyncLoader } from "react-spinners";
